@@ -63,12 +63,37 @@ ITANES2013 = ITANES2013 %>%
     ),
     
     Union = ifelse(ITANES2013$d78_7 == 'Sì', 1, 
-                   ifelse(ITANES2013$d78_7 == 'No', 0, NA)))
+                   ifelse(ITANES2013$d78_7 == 'No', 0, NA)),
+    
+    age = d1
+    )
     
 
 table(ITANES2013$Union )
 table(ITANES2013$residence)
 table(ITANES2013$gender_dummy)
+
+#Education
+
+
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    
+    education = fct_collapse( stu,
+      
+      Diploma = c('Diploma maturità professionale (compreso istituto d\'arte)',
+                  'Diploma maturità tecnica', 'Diploma maturità liceo classico o scientifico',
+                  "Altro diploma maturità (istituto magistrale, liceo linguistico, liceo artistico, liceo socio-psico-p"),
+      University = c("Laurea Scientifica (3/4/5 anni, laurea triennale, laurea specialistica) (include medicina, biologia ",
+                    "Laurea Umanistica (3/4/5 anni, laurea triennale, laurea specialistica) (include psicologia, sociolog")
+    )
+      
+ )
+
+
+levels(ITANES2013$education)[7] = NA
+
+
 
 
 ##POLITICAL IDEOLOGY##
