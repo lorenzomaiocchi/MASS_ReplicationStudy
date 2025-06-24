@@ -323,3 +323,144 @@ ITANES2013$incumbent_numeric = as.numeric(ITANES2013$incumbent)
 #####################################
 
 
+
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    Occupational_Status= case_when(
+      
+      d4 %in% c('Disoccupato/a', 'Cassa integrazione guadagni, lista di mobilità',
+                'In cerca di prima occupazione') ~ 'Unemployed',
+      d4 == '-1' ~ 'Employed',
+      
+      d4 %in% c('Inabila al lavoro', 'Benestante', 'Casalinga', 'Studente/essa' ) ~ 'Inactive',
+      
+      d4 == "Pensionato/a o ritirato/a dal lavoro" ~ 'Retired',
+      
+      TRUE ~ NA_character_
+      
+      
+    )
+  )
+
+table(ITANES2013$Occupational_Status, useNA = 'always')
+
+
+
+##recoding like the author.
+
+ITANES2013$unemployed = ifelse(ITANES2013$Occupational_Status == 'Unemployed', 1, 0)
+
+
+#Type of contract (2 options:  1- Unemployed = NAS, 2- Unemployed are categorized)
+
+#Categorize the Unemployed
+
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    
+    type_of_contract = fct_collapse(
+      cont,
+      
+      'Permanently employed' = 'A tempo indeterminato',
+      'Atypically emplpoyed' = c('A tempo determinato', 'Lavoro senza contratto o non regolamentato'),
+      'Not a worker' = '-1'
+      
+      
+    )
+    
+  )
+
+#Unemployed as NAs
+
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    
+    type_of_contract_na = case_when(
+      
+      cont == 'A tempo indeterminato' ~ 'Permanently employed',
+      cont %in% c('A tempo determinato', 'Lavoro senza contratto o non regolamentato') ~ 'Atypically emplpoyed',
+      TRUE ~ NA_character_
+      
+    ))
+    
+
+##Employment status (synthesis of occupational + type of contract)
+
+
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    
+    Employment_status = case_when(
+      
+      Occupational_Status == 'Employed' & type_of_contract == 'Permanently employed' ~ 'Permanently employed',
+      Occupational_Status == 'Employed' & type_of_contract == 'Atypically employed' ~ 'Atypically employed',
+      Occupational_Status == 'Unemployed' & type_of_contract == 'Not a worker' ~ 'Unemployed',
+      Occupational_Status == 'Inactive' & type_of_contract == 'Not a worker' ~ 'Inactive',
+      Occupational_Status == 'Retired' & type_of_contract == 'Not a worker' ~ 'Retired'
+      )
+)
+
+
+
+######################
+###FEAR OF JOB LOSS###
+
+
+
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    
+    Fear_all = case_when(
+      
+      lav2 %in% c('-1', 'Non risponde')  ~ NA_character_,
+      
+      TRUE ~ lav2
+      ),
+    Fear_all =factor(
+      Fear_all,
+      levels = c('Non ho/ha avuto nessuna paura', "Ho/ha avuto un po' di paura di perdere il posto", 
+                 "Ho/ha avuto molta paura di perdere il posto")
+    ),
+    Fear_all_numeric = as.numeric(Fear_all)
+    
+    )
+
+
+#Dummy active workers:
+
+
+ITANES2013$Fear_all = ifelse(ITANES2013$Fear_all %in% c("Ho/ha avuto un po' di paura di perdere il posto", 
+                                                                                    "Ho/ha avuto molta paura di perdere il posto"),
+                                              1, 0)
+
+table(ITANES2013$Fear_all, ITANES2013$unemployed) #10 unemployed who responded positively are Housekeepers and People in Paid Leave.
+
+#keep also in mind that the question in phrased in such way that asks people to respond in the place of others (relatives)
+
+
+#Fear of jobloss, just for active workers:
+
+
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    
+    Fear_active_workers = factor(case_when(
+      
+      Employment_status %in% c('Permanently employed' , 'Atypically employed') & Fear_all_numeric >= 2 ~ 'Afraid',
+      Employment_status %in% c('Permanently employed' , 'Atypically employed') & Fear_all_numeric < 2 ~ 'Not afraid',
+      TRUE ~ NA_character_
+      
+    )),
+    Fear_active_workers_dummy = ifelse(Fear_active_workers == 'Afraid', 1 , 0),
+    Fear_active_workers = relevel(Fear_active_workers, ref = 'Not afraid')
+    
+  )
+
+
+
+#Save the final dataset
+
+
+ITANES2013_ready = ITANES2013
+
+save(ITANES2013_ready, file = 'Output/Saved data/ITANES2013_ready.RData')

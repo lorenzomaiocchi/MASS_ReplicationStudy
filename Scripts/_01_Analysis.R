@@ -33,6 +33,9 @@ ITANES2018 = ITANES2018_ready
 ##========##==========================
 
 
+#> IMPORTANT : In this script will be replicated the ORIGINAL paper by the author. The additional informations added by me, are written in the file "_03_Additional_analysis"
+
+
 #> Testing Hypothesis n.1: 
 #> Operational Note: The Author presented all the coefficients in the tables
 #> as ODDS-RATIOS.
