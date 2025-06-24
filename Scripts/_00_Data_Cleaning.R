@@ -93,7 +93,7 @@ ITANES2013 = ITANES2013 %>%
 
 levels(ITANES2013$education)[7] = NA
 
-
+ITANES2013$education_numeric = as.numeric(ITANES2013$education)
 
 
 ##POLITICAL IDEOLOGY##
@@ -454,9 +454,9 @@ ITANES2013 = ITANES2013 %>%
 #Dummy active workers:
 
 
-ITANES2013$Fear_all = ifelse(ITANES2013$Fear_all %in% c("Ho/ha avuto un po' di paura di perdere il posto", 
+ITANES2013$Fear_all = as.factor(ifelse(ITANES2013$Fear_all %in% c("Ho/ha avuto un po' di paura di perdere il posto", 
                                                                                     "Ho/ha avuto molta paura di perdere il posto"),
-                                              1, 0)
+                                              1, 0))
 
 table(ITANES2013$Fear_all, ITANES2013$unemployed) #10 unemployed who responded positively are Housekeepers and People in Paid Leave.
 
