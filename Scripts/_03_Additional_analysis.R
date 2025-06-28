@@ -252,3 +252,53 @@ stargazer(model6, coef = odd.model6, p.auto =  F, type = 'html', out = 'Plots/mo
 #Table 3.2
 
 stargazer(model6.1, coef = odd.model6.1, p.auto =  F, type = 'html', out = 'Plots/model6_1.html')
+
+
+####===================================================================================####
+##################### REMAKING THE ORIGINAL MODEL WITH NO VOTE AND "OTHERS" CATEGORIES#####
+
+#Model 2,3 
+
+
+redo_m2 = multinom(voto_challenger2~fear_all_dummy_numeric+
+                employment_status+age+gender+education+
+                residence+union+ideology+euro+immigration+
+                trust+populism+incumbent+eco_hardship_dummy, data=ITANES2018, Hess=TRUE)
+
+
+
+
+redo_m3 = multinom(voto_mainstream2~fear_all_dummy_numeric+
+                employment_status+age+gender+education+
+                residence+union+ideology+euro+immigration+
+                trust+populism+incumbent+eco_hardship_dummy, data=ITANES2018, Hess=TRUE)
+
+coefficienti = lapply(list(coef(redo_m2), coef(redo_m3)), exp)
+
+
+
+stargazer(redo_m2, redo_m3, coef = coefficienti, p.auto = F, type = 'html', out = 'Plots/recreated_models.html')
+
+
+
+###
+red_m8 = multinom(voto_type_na~fear_all_dummy_numeric*eco_hardship_dummy+
+                    employment_status+age+
+                    gender+education+residence+union+
+                    ideology+euro+immigration+trust+populism+incumbent, 
+                  data=ITANES2018, Hess=TRUE)
+
+
+stargazer(red_m8, coef = list(exp(coef(red_m8))), p.auto = F, out = 'Plots/model4_red.html')
+
+
+#reference = 'No vote'
+
+red_m9 = multinom(voto_notvote~fear_all_dummy_numeric*eco_hardship_dummy+
+                    employment_status+age+
+                    gender+education+residence+union+
+                    ideology+euro+immigration+trust+populism+incumbent, 
+                  data=ITANES2018, Hess=TRUE)
+
+
+stargazer(red_m9, coef = list(exp(coef(red_m9))), p.auto = F, out = 'Plots/model5_red.html')
