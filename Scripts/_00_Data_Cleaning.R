@@ -263,46 +263,74 @@ ITANES2013$voto = fct_collapse(
 #Mainstream vs Challengers.
 
 
+##NOTE: READ THE "IMPORTANT" MARKDOWN
+
 #Due to the low numbers of dx- challenger parties, I'm going to incorporate all the alternative right wing parties into "Challengers"
 
-
-ITANES2013$type_voto = fct_collapse(
+#Challenger right is present
+ITANES2013$type_voto_cdx = fct_collapse(
   ITANES2013$voto,
   
   "Mainstream Left" = c('Pd', 'Scelta Civica Con Monti Per L\'italia', 'Centro Democratico', 'Unione Di Centro'),
   "Mainstream Right" = c('Pdl', 'Lega'),
   'Challenger Left' = 'M5s',
-  'Challenger Right' = c('Fdi', 'La Destra', 'Fiamma Tricolore', 'Forza Nuova', 'Casapound Italia'),
+  'Challenger Right' = c('Fdi', 'La Destra', 'Fiamma Tricolore', 'Forza Nuova', 'Casapound Italia', 'Partito Pensionati', 'Grande Sud - Mpa'),
   'Others' = c('altro', "Lista Amnistia Giustizia Liberta'", 'Partito Comunista Dei Lavoratori', 'Mir - Moderati In Rivoluzione',
-               'Il Megafono Di Crocetta', 'Svp', 'Partito Pensionati', 'Grande Sud - Mpa', "Futuro E Liberta'", 'Fare Per Fermare Il Declino',
+               'Il Megafono Di Crocetta', 'Svp', "Futuro E Liberta'", 'Fare Per Fermare Il Declino',
                'Rivoluzione Civile'),
   'No voto' = c('Scheda Bianca/Nulla/Non Ha Votato', 'Non Indica, Non Vuole Risponde', '-1')
   
 )
 
+
+#Incorporated challenger right into the  mainstream right
+
+
+ITANES2013$type_voto_inc = fct_collapse(
+  ITANES2013$voto,
+  
+  "Mainstream Left" = c('Pd', 'Scelta Civica Con Monti Per L\'italia', 'Centro Democratico', 'Unione Di Centro'),
+  "Mainstream Right" = c('Pdl', 'Lega', 'Fdi', 'La Destra', 'Fiamma Tricolore', 'Forza Nuova', 'Casapound Italia', 'Partito Pensionati', 'Grande Sud - Mpa'),
+  'Challenger Left' = 'M5s',
+  'Others' = c('altro', "Lista Amnistia Giustizia Liberta'", 'Partito Comunista Dei Lavoratori', 'Mir - Moderati In Rivoluzione',
+               'Il Megafono Di Crocetta', 'Svp', "Futuro E Liberta'", 'Fare Per Fermare Il Declino',
+               'Rivoluzione Civile'),
+  'No voto' = c('Scheda Bianca/Nulla/Non Ha Votato', 'Non Indica, Non Vuole Risponde', '-1')
+  
+)
+
+
 #The majority of the respondents didn't vote, this is too big of a proportion to leave out.
 
 #we can set 'others' as NA
-levels(ITANES2013$type_voto)[2] = NA
+levels(ITANES2013$type_voto_cdx)[2] = NA
 
-sum(is.na(ITANES2013$type_voto)) / sum(!is.na(ITANES2013$type_voto)) *100 #leaving out just 3.7 percent of the total sample.
+levels(ITANES2013$type_voto_inc)[2] = NA
+
+sum(is.na(ITANES2013$type_voto_cdx)) / sum(!is.na(ITANES2013$type_voto_cdx)) *100 #leaving out just 3.7 percent of the total sample.
 
 
+sum(is.na(ITANES2013$type_voto_inc)) / sum(!is.na(ITANES2013$type_voto_inc)) *100 #leaving out 3.5% of the sample
 
-table(ITANES2013$turnout, ITANES2013$type_voto)
+table(ITANES2013$turnout, ITANES2013$type_voto_inc, useNA = 'always')
 
 
 #Set the order:
 
-ITANES2013$type_voto = factor(
-  ITANES2013$type_voto, levels= c(
+ITANES2013$type_voto_cdx = factor(
+  ITANES2013$type_voto_cdx, levels= c(
     'Mainstream Left', 'Mainstream Right', 'Challenger Left', 'Challenger Right', 'No voto'
   ))
 
 
+ITANES2013$type_voto_inc = factor(
+  ITANES2013$type_voto_inc, levels= c(
+    'Mainstream Left', 'Mainstream Right', 'Challenger Left', 'No voto'))
+
+
 #Challenger / No vote vs Mainstream
 
-ITANES2013$voto_challenger = ITANES2013$type_voto
+ITANES2013$voto_challenger = ITANES2013$type_voto_inc
 
 
 levels(ITANES2013$voto_challenger)[1:2] = 'Mainstream'
@@ -313,7 +341,7 @@ ITANES2013$voto_challenger = relevel(ITANES2013$voto_challenger, ref = 'Mainstre
 
 #Mainstream/No vote  vs Challenger
 
-ITANES2013$voto_Mainstream = ITANES2013$type_voto
+ITANES2013$voto_Mainstream = ITANES2013$type_voto_cdx
 
 
 levels(ITANES2013$voto_Mainstream)[3:4] = 'Challenger'
@@ -323,7 +351,7 @@ ITANES2013$voto_Mainstream = relevel(ITANES2013$voto_Mainstream, ref = 'Challeng
 
 #Mainstream / Challenger vs No vote
 
-ITANES2013$voto_novote = ITANES2013$type_voto
+ITANES2013$voto_novote = ITANES2013$type_voto_cdx
 
 
 ITANES2013$voto_novote = relevel(ITANES2013$voto_novote, ref = 'No voto')

@@ -5,7 +5,7 @@
 
 want = c("rio", "haven", "janitor", "stargazer", "foreign", "magrittr",
          "nnet", "MASS", "MNLpred", "ggplot2", "ggplot2", "extrafont", "scales", "effects", "ggpubr",
-         "jtools", "simEd", 'tidyverse', 'forcats')
+         "jtools", "simEd", 'tidyverse', 'forcats', 'brglm2')
 
 have = want %in% rownames(installed.packages())
 
@@ -123,10 +123,7 @@ model3 =  multinom(
   
 od_model3 = list(exp(coef(model3))) 
 
-##Table B1
-
-
-
+##Table B1 - data from 2013
 
 
 
@@ -141,5 +138,86 @@ stargazer(model3, coef =od_model3, p.auto = F ,type = 'html', out = 'Plots/model
 
 
 
+
+###Models with interaction.
+
+#turnout with interaction
+
+
+model4 = glm(data = ITANES2013,
+             turnout ~
+               Fear_all*Economic_hardship_dummy + 
+               Employment_status +
+               age+
+               gender_dummy+
+               residence+
+               Union+
+               education_numeric + 
+               Ideology_numeric+
+               Trust_EU_numeric+
+               immigration_numeric+
+               incumbent_numeric+
+               Populism_numeric+
+               trust_parties_numeric,
+             family = binomial(link = 'logit'))
+
+
+
+coef_model4od = list(exp(coef(model4)))
+
+
+stargazer(model4,coef = coef_model4od, p.auto = F , type = 'html', out = 'Plots/model4.html')
+
+
+#model of vote with interaction.
+
+model5 =  multinom(
+  type_voto ~
+    Fear_all*Economic_hardship_dummy + 
+    Employment_status +
+    age+
+    gender_dummy+
+    residence+
+    Union+
+    education_numeric + 
+    Ideology_numeric+
+    Trust_EU_numeric+
+    immigration_numeric+
+    Populism_numeric+
+    incumbent_numeric+
+    trust_parties_numeric,
+  data = ITANES2013,
+  Hess =  T
+)
+
+
+od.model5 = list(exp(coef(model5)))
+
+stargazer(model5 ,coef = od.model5, p.auto = F , type = 'html', out = 'Plots/model5.html')
+
+
+
+
+
+model_prova = brmultinom(
+  type_voto ~
+    Fear_all*Economic_hardship_dummy + 
+    Employment_status +
+    age+
+    gender_dummy+
+    residence+
+    Union+
+    education_numeric + 
+    Ideology_numeric+
+    Trust_EU_numeric+
+    immigration_numeric+
+    Populism_numeric+
+    incumbent_numeric+
+    trust_parties_numeric,
+  data = ITANES2013
+)
+
+
+stargazer(model_prova, coef = list(exp(coef(model_prova))), type = 'html', out = 'Plots/model_prova.html')
 
 

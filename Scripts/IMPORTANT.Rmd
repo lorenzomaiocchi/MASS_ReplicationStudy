@@ -1,0 +1,17 @@
+---
+title: "IMPORTANT"
+output: html_document
+---
+
+# **NOTES FOR THE ADDITIONAL ANALYSIS**
+
+
+During the re-coding of the type of vote categories, I run into the problem of low number of observation in one of the outcome categories. 
+The "Challenger-right" category, in its final definition counted 23 total observations out of 1379, the 1.6% of the total.
+
+This is a great problem when estimating coefficients for a Multinomial Logistic Regression using MLE, since the low number of observations, will force the model to maximize for infinity, estimating unrealistically high coefficients (in the order of the thousands, especially if converted to Odds-ratios, like in this case)
+
+
+There are two solutions to the problem: the first is using a specific type of model to account for the low number of information. The second one is to collapse the category of "Challenger-right" into the "Mainstream-right" category. 
+
+I opted for the second option.
