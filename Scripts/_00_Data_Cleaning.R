@@ -330,7 +330,7 @@ ITANES2013$type_voto_inc = factor(
 
 #Challenger / No vote vs Mainstream
 
-ITANES2013$voto_challenger = ITANES2013$type_voto_inc
+ITANES2013$voto_challenger = ITANES2013$type_voto_cdx
 
 
 levels(ITANES2013$voto_challenger)[1:2] = 'Mainstream'
@@ -351,7 +351,7 @@ ITANES2013$voto_Mainstream = relevel(ITANES2013$voto_Mainstream, ref = 'Challeng
 
 #Mainstream / Challenger vs No vote
 
-ITANES2013$voto_novote = ITANES2013$type_voto_cdx
+ITANES2013$voto_novote = ITANES2013$type_voto_inc
 
 
 ITANES2013$voto_novote = relevel(ITANES2013$voto_novote, ref = 'No voto')

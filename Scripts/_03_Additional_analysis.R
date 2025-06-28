@@ -94,9 +94,7 @@ model2 = multinom(
     trust_parties_numeric+
     Economic_hardship_dummy,
   data = ITANES2013,
-  Hess =  T
-    
-)
+  Hess =  T)
 
 od_model2 = list(exp(coef(model2))) 
 
@@ -118,8 +116,7 @@ model3 =  multinom(
     trust_parties_numeric+
     Economic_hardship_dummy,
   data = ITANES2013,
-  Hess =  T
-)
+  Hess =  T)
   
 od_model3 = list(exp(coef(model3))) 
 
@@ -166,13 +163,15 @@ model4 = glm(data = ITANES2013,
 coef_model4od = list(exp(coef(model4)))
 
 
+
+#table 2.1
 stargazer(model4,coef = coef_model4od, p.auto = F , type = 'html', out = 'Plots/model4.html')
 
 
 #model of vote with interaction.
 
 model5 =  multinom(
-  type_voto ~
+  type_voto_inc ~
     Fear_all*Economic_hardship_dummy + 
     Employment_status +
     age+
@@ -187,20 +186,41 @@ model5 =  multinom(
     incumbent_numeric+
     trust_parties_numeric,
   data = ITANES2013,
-  Hess =  T
-)
+  Hess =  T)
 
 
 od.model5 = list(exp(coef(model5)))
 
+
+#Table 2.2
 stargazer(model5 ,coef = od.model5, p.auto = F , type = 'html', out = 'Plots/model5.html')
 
 
+###Model of Mainstream/challengere vs No vote
 
 
+model6 =multinom(
+  voto_novote ~
+    Fear_all +Economic_hardship_dummy + 
+    Employment_status +
+    age+
+    gender_dummy+
+    residence+
+    Union+
+    education_numeric + 
+    Ideology_numeric+
+    Trust_EU_numeric+
+    immigration_numeric+
+    Populism_numeric+
+    incumbent_numeric+
+    trust_parties_numeric,
+  data = ITANES2013,
+  Hess =  T) 
 
-model_prova = brmultinom(
-  type_voto ~
+
+#with interaction
+model6.1 =multinom(
+  voto_novote ~
     Fear_all*Economic_hardship_dummy + 
     Employment_status +
     age+
@@ -214,10 +234,21 @@ model_prova = brmultinom(
     Populism_numeric+
     incumbent_numeric+
     trust_parties_numeric,
-  data = ITANES2013
-)
+  data = ITANES2013,
+  Hess =  T) 
 
 
-stargazer(model_prova, coef = list(exp(coef(model_prova))), type = 'html', out = 'Plots/model_prova.html')
+odd.model6 = list(exp(coef(model6)))
+
+odd.model6.1 = list(exp(coef(model6.1)))
 
 
+#Table 3.1
+
+
+stargazer(model6, coef = odd.model6, p.auto =  F, type = 'html', out = 'Plots/model6.html')
+
+
+#Table 3.2
+
+stargazer(model6.1, coef = odd.model6.1, p.auto =  F, type = 'html', out = 'Plots/model6_1.html')
