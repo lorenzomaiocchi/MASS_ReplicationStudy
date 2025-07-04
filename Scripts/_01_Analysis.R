@@ -225,8 +225,8 @@ stargazer(m4d, coef = list(exp(coef(m4d))), p.auto = F,  type = 'text')
 #FIGURE 1
 
 ##**note: Figure 1 in the Paper is specified as taken from Model 4. The model used here multi1, is different from model 4.
-##**I will therefore proceed to replicate as specified, and make a new version using only model 4 to check for differences 
-##**This will be included in the "_02_Plots" ' script.
+##**The model here is purely used for predictions and plots.
+
 
 set.seed(260423)
 multi1<-multinom(voto~fear_all_dummy_numeric+

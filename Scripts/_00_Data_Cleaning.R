@@ -361,14 +361,22 @@ ITANES2013$voto_novote = relevel(ITANES2013$voto_novote, ref = 'No voto')
 ##INCUMBENT##
 ############
 
-#*Since in the Itanes2013 there is not a variable similar to the one used in Itanes2018,
-#*As 'Incumbent' can be interpreted as the fear / uncertainty caused by the time of economic crisis.
+ITANES2013 = ITANES2013 %>% 
+  mutate(
+    incumbent_numeric = as.numeric(case_when(
+      
+      d9 == "0 - completamente negativo" ~ '0',
+      d9 == "10 - completamente positivo" ~ '10',
+      
+      as.character(d9) %in% as.character(1:9) ~ as.character(d9),
+      TRUE ~ NA_character_
+    
+        
+        )
+    ))
 
-ITANES2013$incumbent = ITANES2013$d6
 
-levels(ITANES2013$incumbent)[6:7] = NA
 
-ITANES2013$incumbent_numeric = as.numeric(ITANES2013$incumbent)
 
 
 
@@ -548,7 +556,7 @@ table(ITANES2018$turnout, ITANES2018$voto_type, useNA = 'always')
 
 #there are 318 respondetns who voted but of whom we do not know the party.
 
-#Will count them as NAs and Not.
+#In this case, non respondents are classified as "Others".
 
 ITANES2018 = ITANES2018 %>% 
   mutate(
@@ -598,4 +606,65 @@ ITANES2018$voto_mainstream2 = relevel(ITANES2018$voto_mainstream2, ref = 'Challe
 ITANES2018$voto_notvote = ITANES2018$voto_type_na
 
 ITANES2018$voto_notvote = relevel(ITANES2018$voto_notvote, ref = 'No vote')
+
+
+
+##
+##Make the non respondents as NAs
+
+
+
+ITANES2018 = ITANES2018 %>% 
+  mutate(
+    voto_type_nr = as.factor(case_when(
+      
+      is.na(turnout)== T & is.na(voto_type) == T~ 'No vote',
+      
+      
+      is.na(turnout) == T & voto_type == 'Preferisco non rispondere'~ 'No vote',
+      
+      
+      voto_type ==  'Preferisco non rispondere'~ NA_character_, 
+      
+      TRUE~ voto_type 
+      
+    )),
+    voto_type_nr = relevel(voto_type_nr, ref = 'Mainstream left')
+  )
+
+
+##
+### Ramake the variables for single voting preferences:
+
+
+
+
+ITANES2018$voto_challenger_nr = ITANES2018$voto_type_nr 
+
+levels(ITANES2018$voto_challenger_nr)[c(1, 4)] = 'Mainstream'
+
+ITANES2018$voto_challenger_nr = relevel(ITANES2018$voto_challenger_nr, ref = 'Mainstream')
+
+
+#Mainstream, no vote, other vs Challenger
+
+
+ITANES2018$voto_mainstream_nr = ITANES2018$voto_type_nr
+
+levels(ITANES2018$voto_mainstream_nr)[2:3] = 'Challenger'
+
+ITANES2018$voto_mainstream_nr = relevel(ITANES2018$voto_mainstream_nr, ref = 'Challenger')
+
+
+
+
+##Challenger, Mainstream, other vs no vote
+
+
+
+ITANES2018$voto_notvote_nr = ITANES2018$voto_type_nr
+
+ITANES2018$voto_notvote_nr = relevel(ITANES2018$voto_notvote_nr, ref = 'No vote')
+
+
 
