@@ -343,6 +343,7 @@ ggsave("Figure2_paper_modelmulti1.png",
 
 
 #Evaluate the effect just on the category = 'permanently employed'
+
 df1 = ITANES2018
 
 

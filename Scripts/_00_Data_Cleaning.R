@@ -51,9 +51,9 @@ ITANES2013 = read.spss("C:/Users/Merio/Desktop/Uni/Multivariate/FINAL EXAM/Paper
 ITANES2013 = ITANES2013 %>% 
   mutate(
     
-    gender_dummy = as.factor(
-      ifelse(sex == 'Donna', 1,0) #1 females, 0 males
-    ),
+    gender_dummy =
+      ifelse(sex == 'Donna', 1,0), #1 females, 0 males
+    
     residence = fct_collapse(
       regioni,
       North = c('Lombardia', 'Piemonte', 'Liguria','Valle d\'Aosta', 'Trentino Alto Adige',
@@ -68,6 +68,12 @@ ITANES2013 = ITANES2013 %>%
     age = d1
     )
     
+#Residence dummies:
+
+ITANES2013$North = ifelse(ITANES2013$residence == 'North', 1, 0)
+ITANES2013$Center = ifelse(ITANES2013$residence == 'Center', 1, 0)
+ITANES2013$South = ifelse(ITANES2013$residence == 'South', 1, 0)
+
 
 table(ITANES2013$Union )
 table(ITANES2013$residence)
@@ -134,6 +140,7 @@ ITANES2013 = ITANES2013 %>%
     Right = ifelse(ITANES2013$ideology_category == 'Right', 1, 0),
     Centre_Left = ifelse(ITANES2013$ideology_category == 'Centre-Left', 1, 0),
     Centre_Right = ifelse(ITANES2013$ideology_category == 'Centre-Right', 1, 0),
+    Centre = ifelse(ITANES2013$ideology_category == 'Centre', 1, 0),
     None = ifelse(is.na(ITANES2013$ideology_category) == TRUE, 1, 0)
   )
 
@@ -375,7 +382,7 @@ ITANES2013 = ITANES2013 %>%
         )
     ))
 
-
+#from 0, negative to 10, positive
 
 
 
@@ -406,12 +413,6 @@ ITANES2013 = ITANES2013 %>%
 table(ITANES2013$Occupational_Status, useNA = 'always')
 
 
-
-##recoding like the author.
-
-ITANES2013$unemployed = ifelse(ITANES2013$Occupational_Status == 'Unemployed', 1, 0)
-
-
 #Type of contract (2 options:  1- Unemployed = NAS, 2- Unemployed are categorized)
 
 #Categorize the Unemployed
@@ -423,7 +424,7 @@ ITANES2013 = ITANES2013 %>%
       cont,
       
       'Permanently employed' = 'A tempo indeterminato',
-      'Atypically emplpoyed' = c('A tempo determinato', 'Lavoro senza contratto o non regolamentato'),
+      'Atypically employed' = c('A tempo determinato', 'Lavoro senza contratto o non regolamentato'),
       'Not a worker' = '-1'
       
       
@@ -439,13 +440,13 @@ ITANES2013 = ITANES2013 %>%
     type_of_contract_na = case_when(
       
       cont == 'A tempo indeterminato' ~ 'Permanently employed',
-      cont %in% c('A tempo determinato', 'Lavoro senza contratto o non regolamentato') ~ 'Atypically emplpoyed',
+      cont %in% c('A tempo determinato', 'Lavoro senza contratto o non regolamentato') ~ 'Atypically employed',
       TRUE ~ NA_character_
       
     ))
     
 
-##Employment status (synthesis of occupational + type of contract)
+##Employment status (synthesis of occupational + type of contract) and dummies
 
 
 ITANES2013 = ITANES2013 %>% 
@@ -458,9 +459,15 @@ ITANES2013 = ITANES2013 %>%
       Occupational_Status == 'Unemployed' & type_of_contract == 'Not a worker' ~ 'Unemployed',
       Occupational_Status == 'Inactive' & type_of_contract == 'Not a worker' ~ 'Inactive',
       Occupational_Status == 'Retired' & type_of_contract == 'Not a worker' ~ 'Retired'
-      )
+      ),
+    Permanently_employed = ifelse(Employment_status == 'Permanently employed', 1, 0),
+    Atypically_employed = ifelse(Employment_status == 'Atypically employed', 1, 0),
+    unemployed = ifelse(Employment_status == 'Unemployed', 1, 0),
+    inactive = ifelse(Employment_status == 'Inactive', 1, 0),
+    retired = ifelse(Employment_status == 'Retired', 1, 0)
 )
 
+table(ITANES2013$Occupational_Status, ITANES2013$type_of_contract)
 
 
 ######################
@@ -481,18 +488,18 @@ ITANES2013 = ITANES2013 %>%
       Fear_all,
       levels = c('Non ho/ha avuto nessuna paura', "Ho/ha avuto un po' di paura di perdere il posto", 
                  "Ho/ha avuto molta paura di perdere il posto")
-    ),
-    Fear_all_numeric = as.numeric(Fear_all)
-    
-    )
+    ))
 
 
 #Dummy active workers:
 
 
-ITANES2013$Fear_all = as.factor(ifelse(ITANES2013$Fear_all %in% c("Ho/ha avuto un po' di paura di perdere il posto", 
+ITANES2013$Fear_all_numeric = ifelse(ITANES2013$Fear_all %in% c("Ho/ha avuto un po' di paura di perdere il posto", 
                                                                                     "Ho/ha avuto molta paura di perdere il posto"),
-                                              1, 0))
+                                              1, 0)
+
+ITANES2013$Fear_all = as.factor(ITANES2013$Fear_all_numeric)
+
 
 table(ITANES2013$Fear_all, ITANES2013$unemployed) #10 unemployed who responded positively are Housekeepers and People in Paid Leave.
 
@@ -666,5 +673,12 @@ ITANES2018$voto_notvote_nr = ITANES2018$voto_type_nr
 
 ITANES2018$voto_notvote_nr = relevel(ITANES2018$voto_notvote_nr, ref = 'No vote')
 
+
+###Save the final dataset for 2018
+
+
+ITANES2018_ready2 = ITANES2018
+
+save(ITANES2018_ready2, file = 'Output/Saved data/ITANES2018_ready2.RData')
 
 
