@@ -272,23 +272,7 @@ ITANES2013$voto = fct_collapse(
 
 ##NOTE: READ THE "IMPORTANT" MARKDOWN
 
-#Due to the low numbers of dx- challenger parties, I'm going to incorporate all the alternative right wing parties into "Challengers"
-
-#Challenger right is present
-ITANES2013$type_voto_cdx = fct_collapse(
-  ITANES2013$voto,
-  
-  "Mainstream Left" = c('Pd', 'Scelta Civica Con Monti Per L\'italia', 'Centro Democratico', 'Unione Di Centro'),
-  "Mainstream Right" = c('Pdl', 'Lega'),
-  'Challenger Left' = 'M5s',
-  'Challenger Right' = c('Fdi', 'La Destra', 'Fiamma Tricolore', 'Forza Nuova', 'Casapound Italia', 'Partito Pensionati', 'Grande Sud - Mpa'),
-  'Others' = c('altro', "Lista Amnistia Giustizia Liberta'", 'Partito Comunista Dei Lavoratori', 'Mir - Moderati In Rivoluzione',
-               'Il Megafono Di Crocetta', 'Svp', "Futuro E Liberta'", 'Fare Per Fermare Il Declino',
-               'Rivoluzione Civile'),
-  'No voto' = c('Scheda Bianca/Nulla/Non Ha Votato', 'Non Indica, Non Vuole Risponde', '-1')
-  
-)
-
+#Due to the low numbers of dx- challenger parties, I'm going to incorporate all the alternative right wing parties into "Mainstream".
 
 #Incorporated challenger right into the  mainstream right
 
@@ -310,11 +294,8 @@ ITANES2013$type_voto_inc = fct_collapse(
 #The majority of the respondents didn't vote, this is too big of a proportion to leave out.
 
 #we can set 'others' as NA
-levels(ITANES2013$type_voto_cdx)[2] = NA
 
 levels(ITANES2013$type_voto_inc)[2] = NA
-
-sum(is.na(ITANES2013$type_voto_cdx)) / sum(!is.na(ITANES2013$type_voto_cdx)) *100 #leaving out just 3.7 percent of the total sample.
 
 
 sum(is.na(ITANES2013$type_voto_inc)) / sum(!is.na(ITANES2013$type_voto_inc)) *100 #leaving out 3.5% of the sample
@@ -324,11 +305,6 @@ table(ITANES2013$turnout, ITANES2013$type_voto_inc, useNA = 'always')
 
 #Set the order:
 
-ITANES2013$type_voto_cdx = factor(
-  ITANES2013$type_voto_cdx, levels= c(
-    'Mainstream Left', 'Mainstream Right', 'Challenger Left', 'Challenger Right', 'No voto'
-  ))
-
 
 ITANES2013$type_voto_inc = factor(
   ITANES2013$type_voto_inc, levels= c(
@@ -337,7 +313,7 @@ ITANES2013$type_voto_inc = factor(
 
 #Challenger / No vote vs Mainstream
 
-ITANES2013$voto_challenger = ITANES2013$type_voto_cdx
+ITANES2013$voto_challenger = ITANES2013$type_voto_inc
 
 
 levels(ITANES2013$voto_challenger)[1:2] = 'Mainstream'
@@ -348,12 +324,10 @@ ITANES2013$voto_challenger = relevel(ITANES2013$voto_challenger, ref = 'Mainstre
 
 #Mainstream/No vote  vs Challenger
 
-ITANES2013$voto_Mainstream = ITANES2013$type_voto_cdx
+ITANES2013$voto_Mainstream = ITANES2013$type_voto_inc
 
 
-levels(ITANES2013$voto_Mainstream)[3:4] = 'Challenger'
-
-ITANES2013$voto_Mainstream = relevel(ITANES2013$voto_Mainstream, ref = 'Challenger')
+ITANES2013$voto_Mainstream = relevel(ITANES2013$voto_Mainstream, ref = 'Challenger Left')
 
 
 #Mainstream / Challenger vs No vote
@@ -425,12 +399,7 @@ ITANES2013 = ITANES2013 %>%
       
       'Permanently employed' = 'A tempo indeterminato',
       'Atypically employed' = c('A tempo determinato', 'Lavoro senza contratto o non regolamentato'),
-      'Not a worker' = '-1'
-      
-      
-    )
-    
-  )
+      'Not a worker' = '-1'))
 
 #Unemployed as NAs
 
@@ -480,14 +449,14 @@ ITANES2013 = ITANES2013 %>%
     
     Fear_all = case_when(
       
-      lav2 %in% c('-1', 'Non risponde')  ~ NA_character_,
+      lav2 %in% c('Non risponde')  ~ NA_character_,
       
       TRUE ~ lav2
       ),
     Fear_all =factor(
       Fear_all,
       levels = c('Non ho/ha avuto nessuna paura', "Ho/ha avuto un po' di paura di perdere il posto", 
-                 "Ho/ha avuto molta paura di perdere il posto")
+                 "Ho/ha avuto molta paura di perdere il posto", '-1')
     ))
 
 
@@ -495,13 +464,13 @@ ITANES2013 = ITANES2013 %>%
 
 
 ITANES2013$Fear_all_numeric = ifelse(ITANES2013$Fear_all %in% c("Ho/ha avuto un po' di paura di perdere il posto", 
-                                                                                    "Ho/ha avuto molta paura di perdere il posto"),
+                                                                                    "Ho/ha avuto molta paura di perdere il posto", '-1'),
                                               1, 0)
 
 ITANES2013$Fear_all = as.factor(ITANES2013$Fear_all_numeric)
 
 
-table(ITANES2013$Fear_all, ITANES2013$unemployed) #10 unemployed who responded positively are Housekeepers and People in Paid Leave.
+table(ITANES2013$Fear_all, ITANES2013$unemployed, useNA = 'always') #10 unemployed who responded positively are Housekeepers and People in Paid Leave.
 
 #keep also in mind that the question in phrased in such way that asks people to respond in the place of others (relatives)
 
@@ -532,153 +501,4 @@ ITANES2013 = ITANES2013 %>%
 ITANES2013_ready = ITANES2013
 
 save(ITANES2013_ready, file = 'Output/Saved data/ITANES2013_ready.RData')
-
-
-
-
-
-
-#####ADDITION TO THE ITANES 2018
-
-
-
-#include the NAs as non voters.
-
-
-
-ITANES2018 = ITANES2018 %>% 
-  mutate(
-    voto_type = fct_collapse(
-      votocheck_post,
-      "Mainstream left" = c("Ho votato Più Europa con Emma Bonino, alleato del PD", "Ho votato Partito Democratico"),
-      "Mainstream right" = c("Ho votato Forza Italia – Berlusconi Presidente", "Ho votato Noi con l’Italia"),
-      'Challenger right' = c("Ho votato Lega – Salvini Premier", "Ho votato Fratelli d’Italia"),
-      'Challenger left' = 'Ho votato il MoVimento 5 Stelle',
-      'Other'= c("Ho votato Liberi e Uguali con Pietro Grasso", "Ho votato Civica Popolare - Lorenzin", "Ho votato un’altra lista o partito" ),
-      'No vote' = c("Ho votato scheda bianca o scheda nulla", "Non sono andato a votare", 'Ho votato Insieme'))
-)
-
-
-table(ITANES2018$turnout, ITANES2018$voto_type, useNA = 'always')
-
-#there are 318 respondetns who voted but of whom we do not know the party.
-
-#In this case, non respondents are classified as "Others".
-
-ITANES2018 = ITANES2018 %>% 
-  mutate(
-    voto_type_na = as.factor(case_when(
-      
-     is.na(turnout)== T & is.na(voto_type) == T~ 'No vote',
-     
-      
-     is.na(turnout) == T & voto_type == 'Preferisco non rispondere'~ 'No vote',
-     
-     
-     voto_type ==  'Preferisco non rispondere'~ 'Other', 
-      
-     TRUE~ voto_type 
-      
-    )),
-    voto_type_na = relevel(voto_type_na, ref = 'Mainstream left')
-  )
-
-
-#Challenger, no vote, other vs Mainstream
-
-
-ITANES2018$voto_challenger2 = ITANES2018$voto_type_na 
-  
-levels(ITANES2018$voto_challenger2)[c(1, 4)] = 'Mainstream'
-
-ITANES2018$voto_challenger2 = relevel(ITANES2018$voto_challenger2, ref = 'Mainstream')
-
-
-#Mainstream, no vote, other vs Challenger
-
-
-ITANES2018$voto_mainstream2 = ITANES2018$voto_type_na 
-
-levels(ITANES2018$voto_mainstream2)[2:3] = 'Challenger'
-
-ITANES2018$voto_mainstream2 = relevel(ITANES2018$voto_mainstream2, ref = 'Challenger')
-
-
-
-
-##Challenger, Mainstream, other vs no vote
-
-
-
-ITANES2018$voto_notvote = ITANES2018$voto_type_na
-
-ITANES2018$voto_notvote = relevel(ITANES2018$voto_notvote, ref = 'No vote')
-
-
-
-##
-##Make the non respondents as NAs
-
-
-
-ITANES2018 = ITANES2018 %>% 
-  mutate(
-    voto_type_nr = as.factor(case_when(
-      
-      is.na(turnout)== T & is.na(voto_type) == T~ 'No vote',
-      
-      
-      is.na(turnout) == T & voto_type == 'Preferisco non rispondere'~ 'No vote',
-      
-      
-      voto_type ==  'Preferisco non rispondere'~ NA_character_, 
-      
-      TRUE~ voto_type 
-      
-    )),
-    voto_type_nr = relevel(voto_type_nr, ref = 'Mainstream left')
-  )
-
-
-##
-### Ramake the variables for single voting preferences:
-
-
-
-
-ITANES2018$voto_challenger_nr = ITANES2018$voto_type_nr 
-
-levels(ITANES2018$voto_challenger_nr)[c(1, 4)] = 'Mainstream'
-
-ITANES2018$voto_challenger_nr = relevel(ITANES2018$voto_challenger_nr, ref = 'Mainstream')
-
-
-#Mainstream, no vote, other vs Challenger
-
-
-ITANES2018$voto_mainstream_nr = ITANES2018$voto_type_nr
-
-levels(ITANES2018$voto_mainstream_nr)[2:3] = 'Challenger'
-
-ITANES2018$voto_mainstream_nr = relevel(ITANES2018$voto_mainstream_nr, ref = 'Challenger')
-
-
-
-
-##Challenger, Mainstream, other vs no vote
-
-
-
-ITANES2018$voto_notvote_nr = ITANES2018$voto_type_nr
-
-ITANES2018$voto_notvote_nr = relevel(ITANES2018$voto_notvote_nr, ref = 'No vote')
-
-
-###Save the final dataset for 2018
-
-
-ITANES2018_ready2 = ITANES2018
-
-save(ITANES2018_ready2, file = 'Output/Saved data/ITANES2018_ready2.RData')
-
 

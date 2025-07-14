@@ -24,13 +24,20 @@ set.seed(260423)
 
 
 
-## LOAD THE DATA ##
+## LOAD THE DATA FOR 2013 ##
 
 load('Output/Saved data/ITANES2013_ready.RData')
 
 
 ITANES2013 = ITANES2013_ready
 
+
+## LOAD THE DATA FOR 2018 ##
+
+load('Output/Saved data/ITANES2018_ready2.RData')
+
+
+ITANES2018 = ITANES2018_ready2
 
 
 #==========================================================================================#
@@ -124,15 +131,13 @@ od_model3 = list(exp(coef(model3)))
 ##Table B1 - data from 2013
 
 
+stargazer(model1, coef = od_model1, p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model1.html')
 
 
-stargazer(model1, coef = od_model1, p.auto = F ,type = 'html', out = 'Plots/Tables/Additional Analysis Table/model1.html')
+stargazer(model2, coef = od_model2, p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model2.html')
 
 
-stargazer(model2, coef = od_model2, p.auto = F ,type = 'html', out = 'Plots/Tables/Additional Analysis Table/model2.html')
-
-
-stargazer(model3, coef =od_model3, p.auto = F ,type = 'html', out = 'Plots/Tables/Additional Analysis Table/model3.html')
+stargazer(model3, coef =od_model3, p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model3.html')
 
 
 
@@ -166,7 +171,7 @@ coef_model4od = list(exp(coef(model4)))
 
 
 #table 2.1
-stargazer(model4,coef = coef_model4od, p.auto = F , type = 'html', out = 'Plots/Tables/Additional Analysis Table/model4.html')
+stargazer(model4,coef = coef_model4od, p.auto = F , type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model4.html')
 
 
 #model of vote with interaction.
@@ -194,7 +199,7 @@ od.model5 = list(exp(coef(model5)))
 
 
 #Table 2.2
-stargazer(model5 ,coef = od.model5, p.auto = F , type = 'html', out = 'Plots/Tables/Additional Analysis Table/model5.html')
+stargazer(model5 ,coef = od.model5, p.auto = F , type = 'html', style = 'apsr',out = 'Plots/Tables/Additional Analysis Table/model5.html')
 
 
 ###Model of Mainstream/challenger vs No vote
@@ -247,119 +252,12 @@ odd.model6.1 = list(exp(coef(model6.1)))
 #Table 3.1
 
 
-stargazer(model6, coef = odd.model6, p.auto =  F, type = 'html', out = 'Plots/Tables/Additional Analysis Table/model6.html')
+stargazer(model6, coef = odd.model6, p.auto =  F, type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model6.html')
 
 
 #Table 3.2
 
-stargazer(model6.1, coef = odd.model6.1, p.auto =  F, type = 'html', out = 'Plots/Tables/Additional Analysis Table/model6_1.html')
-
-
-####===================================================================================####
-##################### REMAKING THE ORIGINAL MODEL WITH NO VOTE AND "OTHERS" CATEGORIES#####
-
-#Model 2,3 
-
-
-redo_m2 = multinom(voto_challenger2~fear_all_dummy_numeric+
-                employment_status+age+gender+education+
-                residence+union+ideology+euro+immigration+
-                trust+populism+incumbent+eco_hardship_dummy, data=ITANES2018, Hess=TRUE)
-
-
-
-
-redo_m3 = multinom(voto_mainstream2~fear_all_dummy_numeric+
-                employment_status+age+gender+education+
-                residence+union+ideology+euro+immigration+
-                trust+populism+incumbent+eco_hardship_dummy, data=ITANES2018, Hess=TRUE)
-
-coefficienti = lapply(list(coef(redo_m2), coef(redo_m3)), exp)
-
-
-
-stargazer(redo_m2, redo_m3, coef = coefficienti, p.auto = F, type = 'html', out = 'Plots/Tables/Re-make models/recreated_models.html')
-
-
-
-###
-red_m8 = multinom(voto_type_na~fear_all_dummy_numeric*eco_hardship_dummy+
-                    employment_status+age+
-                    gender+education+residence+union+
-                    ideology+euro+immigration+trust+populism+incumbent, 
-                  data=ITANES2018, Hess=TRUE)
-
-
-stargazer(red_m8, coef = list(exp(coef(red_m8))), p.auto = F, out = 'Plots/Tables/Re-make models/model4_red.html')
-
-
-#reference = 'No vote'
-
-red_m9 = multinom(voto_notvote~fear_all_dummy_numeric*eco_hardship_dummy+
-                    employment_status+age+
-                    gender+education+residence+union+
-                    ideology+euro+immigration+trust+populism+incumbent, 
-                  data=ITANES2018, Hess=TRUE)
-
-
-stargazer(red_m9, coef = list(exp(coef(red_m9))), p.auto = F, out = 'Plots/Tables/Re-make models/model5_red.html')
-
-
-
-
-#####
-####### MODELS WITH NON-RESPONDENT AS NAs
-
-
-
-redo_m2.2 = multinom(voto_challenger_nr~fear_all_dummy_numeric+
-                     employment_status+age+gender+education+
-                     residence+union+ideology+euro+immigration+
-                     trust+populism+incumbent+eco_hardship_dummy, data=ITANES2018, Hess=TRUE)
-
-
-
-redo_m3.2 = multinom(voto_mainstream_nr~fear_all_dummy_numeric+
-                     employment_status+age+gender+education+
-                     residence+union+ideology+euro+immigration+
-                     trust+populism+incumbent+eco_hardship_dummy, data=ITANES2018, Hess=TRUE)
-
-
-coefficienti.2 = lapply(list(coef(redo_m2.2), coef(redo_m3.2)), exp)
-
-
-
-stargazer(redo_m2.2, redo_m3.2, p.auto = F, coef = coefficienti.2, type = 'html', out = 'Plots/Tables/Re-make models/recreated_models2.html')
-
-
-
-###
-red_m8.2 = multinom(voto_type_nr~fear_all_dummy_numeric*eco_hardship_dummy+
-                    employment_status+age+
-                    gender+education+residence+union+
-                    ideology+euro+immigration+trust+populism+incumbent, 
-                  data=ITANES2018, Hess=TRUE)
-
-
-stargazer(red_m8.2, coef = list(exp(coef(red_m8.2))), p.auto = F, out = 'Plots/Tables/Re-make models/model4.2_red.html')
-
-
-#reference = 'No vote'
-
-red_m9.2 = multinom(voto_notvote_nr~fear_all_dummy_numeric*eco_hardship_dummy+
-                    employment_status+age+
-                    gender+education+residence+union+
-                    ideology+euro+immigration+trust+populism+incumbent, 
-                  data=ITANES2018, Hess=TRUE)
-
-
-stargazer(red_m9.2, coef = list(exp(coef(red_m9.2))), p.auto = F, out = 'Plots/Tables/Re-make models/model5.2_red.html')
-
-
-
-
-
-
+stargazer(model6.1, coef = odd.model6.1, p.auto =  F, type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model6_1.html')
 
 
 
@@ -369,7 +267,7 @@ stargazer(red_m9.2, coef = list(exp(coef(red_m9.2))), p.auto = F, out = 'Plots/T
 
 
 pred_model =  multinom(
-    type_voto_cdx ~
+    type_voto_inc ~
       Fear_all_numeric + Economic_hardship_dummy + 
       Permanently_employed + inactive + retired + unemployed +
       age+
@@ -450,7 +348,7 @@ Figure2_AA = fd$plotdata %>%
   ggplot(aes(fear_all_dummy, mean, ymin = lower, ymax = upper, shape = fear_all_dummy))+
   geom_pointrange(color = 'darkgreen')+
   theme_bw()+
-  facet_wrap(~type_voto_cdx, ncol = 2)+
+  facet_wrap(~type_voto_inc, ncol = 2)+
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank())+
   scale_y_continuous(labels = percent_format())+
@@ -477,12 +375,6 @@ ggsave("Fear_JB_2013.png",
        height = 5,
        dpi = 600,
        path = 'Plots/Figures/Additional Analysis')
-
-
-
-
-
-
 
 
 
@@ -601,7 +493,7 @@ pp$category = factor(pp$category, levels = c('Permanently Employed', 'Atypically
 Figure3_AA = pp %>% 
   ggplot(aes(category, mean, ymin = lower, ymax = upper, shape = category))+
   geom_pointrange(color = 'blue')+
-  facet_wrap(~type_voto_cdx, ncol = 2)+
+  facet_wrap(~type_voto_inc, ncol = 2)+
   theme_bw()+
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank())+
@@ -628,3 +520,12 @@ ggsave("Figure3_AA_empl.png",
        path = 'Plots/Figures/Additional Analysis')
 
 
+## calculate the marginal effect of economic hardship on vote choice.
+
+me_2013 = marginaleffects::slopes(model = pred_model,by = 'group', variables = 'Economic_hardship_dummy')
+
+me_2013 %>% 
+  ggplot(aes(group, estimate))+
+  geom_pointrange(aes(ymin =conf.low, ymax = conf.high ), color = 'blue')+
+  geom_hline(yintercept = 0, color = 'red')+
+  theme_bw()
