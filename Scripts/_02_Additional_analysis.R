@@ -32,14 +32,6 @@ load('Output/Saved data/ITANES2013_ready.RData')
 ITANES2013 = ITANES2013_ready
 
 
-## LOAD THE DATA FOR 2018 ##
-
-load('Output/Saved data/ITANES2018_ready2.RData')
-
-
-ITANES2018 = ITANES2018_ready2
-
-
 #==========================================================================================#
 ##
 ##                                ADDITIONAL ANALYSIS                                     ##
@@ -79,7 +71,7 @@ model1 = glm(data = ITANES2013,
              )
                
 
-od_model1 = list(exp(coef(model1)))            
+od_model1 = exp(coef(model1))          
 
 
 
@@ -103,7 +95,7 @@ model2 = multinom(
   data = ITANES2013,
   Hess =  T)
 
-od_model2 = list(exp(coef(model2))) 
+od_model2 = exp(coef(model2))
 
 
 
@@ -126,30 +118,24 @@ model3 =  multinom(
   data = ITANES2013,
   Hess =  T)
   
-od_model3 = list(exp(coef(model3))) 
+od_model3 = exp(coef(model3))
 
 ##Table B1 - data from 2013
 
 
-stargazer(model1, coef = od_model1, p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model1.html')
-
-
-stargazer(model2, coef = od_model2, p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model2.html')
-
-
-stargazer(model3, coef =od_model3, p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model3.html')
+stargazer(model1, model2, model3, coef = list(od_model1, od_model2, od_model3), p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/Tableb1_m1m2m3.html')
 
 
 
+###Models with interaction###
 
-###Models with interaction.
 
 #turnout with interaction
 
 
 model4 = glm(data = ITANES2013,
              turnout ~
-               Fear_all*Economic_hardship_dummy + 
+               Fear_all*Economic_hardship_dummy+ 
                Employment_status +
                age+
                gender_dummy+
@@ -166,19 +152,15 @@ model4 = glm(data = ITANES2013,
 
 
 
-coef_model4od = list(exp(coef(model4)))
+coef_model4od = exp(coef(model4))
 
-
-
-#table 2.1
-stargazer(model4,coef = coef_model4od, p.auto = F , type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model4.html')
 
 
 #model of vote with interaction.
 
 model5 =  multinom(
   type_voto_inc ~
-    Fear_all*Economic_hardship_dummy + 
+    Fear_all*Economic_hardship_dummy+
     Employment_status +
     age+
     gender_dummy+
@@ -195,70 +177,11 @@ model5 =  multinom(
   Hess =  T)
 
 
-od.model5 = list(exp(coef(model5)))
+od.model5 = exp(coef(model5))
 
 
 #Table 2.2
-stargazer(model5 ,coef = od.model5, p.auto = F , type = 'html', style = 'apsr',out = 'Plots/Tables/Additional Analysis Table/model5.html')
-
-
-###Model of Mainstream/challenger vs No vote
-
-
-model6 =multinom(
-  voto_novote ~
-    Fear_all +Economic_hardship_dummy + 
-    Employment_status +
-    age+
-    gender_dummy+
-    residence+
-    Union+
-    education_numeric + 
-    Ideology_numeric+
-    Trust_EU_numeric+
-    immigration_numeric+
-    Populism_numeric+
-    incumbent_numeric+
-    trust_parties_numeric,
-  data = ITANES2013,
-  Hess =  T) 
-
-
-#with interaction
-model6.1 =multinom(
-  voto_novote ~
-    Fear_all*Economic_hardship_dummy + 
-    Employment_status +
-    age+
-    gender_dummy+
-    residence+
-    Union+
-    education_numeric + 
-    Ideology_numeric+
-    Trust_EU_numeric+
-    immigration_numeric+
-    Populism_numeric+
-    incumbent_numeric+
-    trust_parties_numeric,
-  data = ITANES2013,
-  Hess =  T) 
-
-
-odd.model6 = list(exp(coef(model6)))
-
-odd.model6.1 = list(exp(coef(model6.1)))
-
-
-#Table 3.1
-
-
-stargazer(model6, coef = odd.model6, p.auto =  F, type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model6.html')
-
-
-#Table 3.2
-
-stargazer(model6.1, coef = odd.model6.1, p.auto =  F, type = 'html', style = 'apsr', out = 'Plots/Tables/Additional Analysis Table/model6_1.html')
-
+stargazer(model4, model5 ,coef = list(coef_model4od, od.model5), p.auto = F , type = 'html', style = 'apsr',out = 'Plots/Tables/Additional Analysis Table/table4_m4m5int.html')
 
 
 ############################################################################################################
@@ -522,10 +445,34 @@ ggsave("Figure3_AA_empl.png",
 
 ## calculate the marginal effect of economic hardship on vote choice.
 
-me_2013 = marginaleffects::slopes(model = pred_model,by = 'group', variables = 'Economic_hardship_dummy')
+me_2013 = marginaleffects::slopes(model = pred_model,by = 'group', variables = 'Economic_hardship_dummy', conf_level = 0.95)
 
-me_2013 %>% 
+Figure3.1 = me_2013 %>% 
   ggplot(aes(group, estimate))+
   geom_pointrange(aes(ymin =conf.low, ymax = conf.high ), color = 'blue')+
   geom_hline(yintercept = 0, color = 'red')+
-  theme_bw()
+  scale_y_continuous(labels = percent_format()) +
+  theme_bw() +
+  labs(y = "Predicted probabilities",
+       x = "Vote choice") + 
+  theme(axis.text.x = element_text( size=14))+ 
+  theme(axis.text.y = element_text( size=14))+ 
+  theme(axis.title = element_text(size = 15)) + 
+  theme(
+    axis.title.x = element_text(hjust=0.5),
+    axis.title.y = element_text(hjust=0.5)   
+  )+
+  theme(text = element_text(family = "LM Roman 10"))
+
+
+
+ggsave("eco_hard_me.png",
+       plot = Figure3.1,
+       device = "png",
+       units = "in",
+       width = 8,
+       height = 5,
+       dpi = 600,
+       path = 'Plots/Figures/Additional Analysis')
+
+

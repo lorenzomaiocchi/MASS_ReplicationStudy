@@ -56,7 +56,7 @@ coef_list = lapply(list(coef(m1), coef(m2), coef(m3)), exp)
 
 
 #TABLE 1 
-stargazer::stargazer(m1, m2, m3, coef = coef_list, p.auto = F ,type = 'text', style = 'apsr')
+stargazer::stargazer(m1, m2, m3, coef = coef_list, p.auto = F ,type = 'html', style = 'apsr', out = 'Plots/Tables/Replication tables/Paper Tables/Paper_table1.html')
 
 #Results are consistent with the findings of the Author.
 
@@ -76,7 +76,7 @@ coef_list_t2 = lapply(list(coef(m7), coef(m8)), exp)
 
 #TABLE 2#
 
-stargazer::stargazer(m7, m8, coef = coef_list_t2, p.auto = F, type = 'text', style = 'apsr' )
+stargazer::stargazer(m7, m8, coef = coef_list_t2, p.auto = F, type = 'text', style = 'apsr', out = 'Plots/Tables/Replication tables/Paper Tables/Paper_table2.html' )
 
 
 #results are consistent with the findings of the Author.
@@ -96,7 +96,7 @@ m4 = multinom(voto ~ fear_all_dummy_numeric+employment_status+age+gender+educati
 
 m4.coef = exp(coef(m4))
 
-stargazer(m4, coef = list(m4.coef),  p.auto = F, type = 'text', style = 'apsr')
+stargazer(m4, coef = list(m4.coef),  p.auto = F, type = 'text', style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_A1.html')
 
 
 
@@ -109,7 +109,7 @@ m5.coef = exp(coef(m5))
 
 
 ##TABLE A2
-stargazer(m5, coef = list(m5.coef), p.auto = F, type = 'text', style = 'apsr')
+stargazer(m5, coef = list(m5.coef), p.auto = F, type = 'text', style = 'apsr',out = 'Plots/Tables/Replication tables/Online Appendix models/AM_A2.html')
 
 
 #Model 6 --> Table A3 
@@ -120,7 +120,7 @@ m6.rrr = exp(coef(m6))
 
 #TABLE A3
 
-stargazer(m6, coef = list(m6.rrr), p.auto = F, type = 'text', style = 'apsr')
+stargazer(m6, coef = list(m6.rrr), p.auto = F, type = 'text', style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_A3.html')
 
 
 
@@ -137,7 +137,7 @@ cf_mb = lapply(list(coef(m2b), coef(m3b)), exp)
 
 #Table S2
 
-stargazer(m2b, m3b, coef = cf_mb, type = 'text', p.auto = F, style = 'apsr')
+stargazer(m2b, m3b, coef = cf_mb, type = 'text', p.auto = F, style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_S1.html')
 
 
 ### 
@@ -149,7 +149,7 @@ m4b = multinom(voto_Lega~fear_all_dummy_numeric+employment_status+age+gender+edu
 mb4_cof = exp(coef(m4b))
 
 #TABLE S2 - model 4b
-stargazer(m4b, coef = list(mb4_cof), type = 'text', p.auto = F, style = 'apsr')
+stargazer(m4b, coef = list(mb4_cof), type = 'text', p.auto = F, style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_S2.html')
 
 
 ### Models 2c and 3c
@@ -163,7 +163,7 @@ c23_coef = lapply(list(coef(m2c), coef(m3c)), exp)
 
 
 ##TABLE S3
-stargazer(m2c, m3c, coef = c23_coef, p.auto = F, type = 'text', style = 'apsr')
+stargazer(m2c, m3c, coef = c23_coef, p.auto = F, type = 'text', style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_S3.html')
 
 
 
@@ -174,7 +174,7 @@ m4c = multinom(voto~fear_activeworkers_dummy+eco_hardship_dummy+employment_statu
 
 #TABLE S4
 
-stargazer(m4c, coef = list(exp(coef(m4c))), p.auto = F, type = 'text', style = 'apsr')
+stargazer(m4c, coef = list(exp(coef(m4c))), p.auto = F, type = 'text', style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_S4.html')
 
 
 
@@ -193,7 +193,7 @@ coefficients_S6 = lapply(list(coef(m1d), coef(m2d), coef(m3d)), exp)
 
 #TABLE S6
 
-stargazer(m1d, m2d, m3d, coef = coefficients_S6, p.auto = F, type = 'text', style = 'apsr')
+stargazer(m1d, m2d, m3d, coef = coefficients_S6, p.auto = F, type = 'text', style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_S6.html')
 
 
 #Model 4b, for table S7
@@ -207,7 +207,7 @@ m4d = multinom(voto~fear_all_dummy_numeric+employment_status+age+gender+educatio
 
 #TABLE S7
 
-stargazer(m4d, coef = list(exp(coef(m4d))), p.auto = F,  type = 'text', style = 'apsr')
+stargazer(m4d, coef = list(exp(coef(m4d))), p.auto = F,  type = 'text', style = 'apsr', out = 'Plots/Tables/Replication tables/Online Appendix models/AM_S7.html')
 
 
 ##=========================================================================================
@@ -289,7 +289,7 @@ ggsave("Figure1_paper_modelmulti1.png",
        width = 8,
        height = 5,
        dpi = 600,
-       path = 'Plots')
+       path = 'Plots/Figures/Replication Figures')
   
 
 ###
@@ -336,7 +336,7 @@ ggsave("Figure2_paper_modelmulti1.png",
        width = 8,
        height = 5,
        dpi = 600,
-       path = 'Plots')
+       path = 'Plots/Figures/Replication Figures')
 
 
 #PLOT A2
@@ -435,7 +435,6 @@ pred_permanently_empl$plotdata = pred_permanently_empl$plotdata %>%
   filter(category != "Self-employed")
 
 
-pps$category<-factor(pps$category, levels=c("Unemployed" , "Atypically employed","Permanently employed", "Self-employed"))
 
 #Bind all the data together.
 
@@ -446,6 +445,7 @@ pps = pred_unemployed$plotdata %>%
 
 pps$category = as.factor(as.character(pps$category))
 
+pps$category<-factor(pps$category, levels=c("Unemployed" , "Atypically employed","Permanently employed", "Self-employed"))
 
 ##PLOT 
 
@@ -479,7 +479,7 @@ ggsave("FigureA2_paper_ES.png",
        width = 8,
        height = 5,
        dpi = 600,
-       path = 'Plots')
+       path = 'Plots/Figures/Replication Figures')
 
 
 ##
@@ -544,7 +544,7 @@ ggsave("Pred2013_Nopaper.png",
        width = 8,
        height = 5,
        dpi = 600,
-       path = 'Plots')
+       path = 'Plots/Figures/Replication Figures')
 
 
 
@@ -583,7 +583,7 @@ ggsave("Fd2013_FS1_OA.png",
        width = 8,
        height = 5,
        dpi = 600,
-       path = 'Plots')
+       path = 'Plots/Figures/Replication Figures')
 
 
 
